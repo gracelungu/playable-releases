@@ -1,0 +1,30 @@
+{
+  "version": "0.1.7",
+  "repository": "gracelungu/playable-releases",
+  "downloads": {
+    "mac-x64": {
+      "url": "https://github.com/gracelungu/playable-releases/releases/download/v0.1.7/Playable-mac-x64.zip",
+      "bytes": 993142062,
+      "sha256": "cd6857c094b1ca7c7cc9e37dfe2cb95a9f26ba0c1c181d539d6f684e4e05da46",
+      "version": "0.1.7"
+    },
+    "mac-arm64": {
+      "url": "https://github.com/gracelungu/playable-releases/releases/download/v0.1.7/Playable-mac-arm64.zip",
+      "bytes": 941777797,
+      "sha256": "79e207a7b1679263fe7e82ca2bdb2f0deb4a14737e9b8de744c4febaa07c68cf",
+      "version": "0.1.7"
+    },
+    "windows-x64": {
+      "url": "https://github.com/gracelungu/playable-releases/releases/download/v0.1.7/Playable-windows-x64.zip",
+      "bytes": 1037793097,
+      "sha256": "fbe252e3855e64ea1f59ea1a9a72f038d3cf5c6759d47e3fb52156ac28e4bc6d",
+      "version": "0.1.7"
+    },
+    "linux-x64": {
+      "url": "https://github.com/gracelungu/playable-releases/releases/download/v0.1.7/Playable-linux-x64.deb",
+      "bytes": 1072712954,
+      "sha256": "8aeccd49230c9b0ef3721afb88a9fc965ea49878ab19d313c66ca718c8835606",
+      "version": "0.1.7"
+    }
+  }
+}

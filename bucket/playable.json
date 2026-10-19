@@ -1,0 +1,26 @@
+{
+  "version": "0.1.7",
+  "description": "Local game studio with AI agents, Blender and Godot",
+  "homepage": "https://playable-website-free-projects-0e54be6d.vercel.app",
+  "license": "Proprietary",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/gracelungu/playable-releases/releases/download/v0.1.7/Playable-windows-x64.zip",
+      "hash": "fbe252e3855e64ea1f59ea1a9a72f038d3cf5c6759d47e3fb52156ac28e4bc6d",
+      "extract_dir": "Playable-win32-x64"
+    }
+  },
+  "bin": [
+    [
+      "Playable.exe",
+      "playable"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "Playable.exe",
+      "Playable"
+    ]
+  ],
+  "notes": "Open Playable and connect your Codex or Claude Code account. Blender and Godot are bundled. AI access and usage are separate."
+}

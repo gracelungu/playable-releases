@@ -1,24 +1,42 @@
-# Playable desktop downloads
+# Playable installers
 
-Make and test 3D games in a local studio with Codex or Claude, Blender 4.5 LTS and Godot 4.6.
+Public installation manifests and desktop releases. Application source is maintained separately.
 
-[Visit the website](https://playable-website.vercel.app) · [Release notes and checksums](https://github.com/gracelungu/playable-releases/releases/tag/v0.1.6)
+## macOS (Apple silicon or Intel, macOS 13.1+)
 
-## Download v0.1.6
+```sh
+brew tap gracelungu/playable https://github.com/gracelungu/playable-releases
+brew install --cask gracelungu/playable/playable
+```
 
-| Platform | Download |
-| --- | --- |
-| macOS Apple silicon (M1 and later) | [Playable-mac-arm64.zip](https://github.com/gracelungu/playable-releases/releases/download/v0.1.6/Playable-mac-arm64.zip) |
-| macOS Intel | [Playable-mac-x64.zip](https://github.com/gracelungu/playable-releases/releases/download/v0.1.6/Playable-mac-x64.zip) |
-| Windows 64-bit Intel/AMD | [Playable-windows-x64.zip](https://github.com/gracelungu/playable-releases/releases/download/v0.1.6/Playable-windows-x64.zip) |
-| Ubuntu 24.04 64-bit Intel/AMD | [Playable-linux-x64.deb](https://github.com/gracelungu/playable-releases/releases/download/v0.1.6/Playable-linux-x64.deb) |
+Install Homebrew first from https://brew.sh if needed. The cask chooses your Mac's architecture and verifies its SHA-256. Early-access Mac builds are ad-hoc signed, not Developer ID signed or notarized; approve opening in System Settings → Privacy & Security if macOS blocks it. This installer does not disable Gatekeeper. Update with `brew update && brew upgrade --cask gracelungu/playable/playable`.
 
-macOS: unzip and move Playable.app to Applications. Find your chip in Apple menu → About This Mac. These early-access builds have verified ad-hoc signatures, but Developer ID signing and notarization are still pending. Gatekeeper may block opening the app or require approval in Privacy & Security.
+## Windows 11 (Intel / AMD 64-bit)
 
-Windows: extract the complete ZIP, then open Playable.exe inside its folder. Linux: install the .deb through Ubuntu's software installer, which also installs required dependencies.
+```powershell
+scoop bucket add playable https://github.com/gracelungu/playable-releases
+scoop install playable/playable
+```
 
-Blender and Godot are included for the matching system. If Blender cannot start, open Settings → Engines → Download and repair Blender. Playable asks before downloading the official native build and verifies its checksum. A compatible separate installation can also be selected with Browse.
+Install Scoop first using https://scoop.sh. Scoop verifies the package checksum, extracts the whole application, and adds a Start menu shortcut. Update with `scoop update; scoop update playable`. ARM Windows is not supported by this package.
 
-AI accounts and usage are separate. Verify downloads with [SHA256SUMS.txt](https://github.com/gracelungu/playable-releases/releases/download/v0.1.6/SHA256SUMS.txt). Engine licenses, notices and the matching Blender source archive are included in each package.
+## Ubuntu 24.04 (Intel / AMD 64-bit)
 
-This repository distributes installers only. Application source is maintained separately.
+```sh
+curl -fsSL https://raw.githubusercontent.com/gracelungu/playable-releases/main/installers/install.sh -o /tmp/playable-install.sh
+sh /tmp/playable-install.sh
+```
+
+The script downloads the published .deb, verifies its pinned SHA-256, and installs through apt. Inspect it before running if you prefer. apt asks for administrator authorization and dependency confirmation. Re-run to upgrade; remove with `sudo apt remove playable`. This is not an apt repository. No automatic repository is added.
+
+## Ask your coding assistant
+
+Install Playable on this computer using the instructions at https://github.com/gracelungu/playable-releases. Detect my OS and CPU, choose the supported installer, verify checksums, and ask me to complete administrator or sign-in prompts. Open Playable afterward.
+
+## AI setup
+
+Connect Codex or Claude Code with your own account inside Playable. Native runtimes, Blender and Godot are included. AI accounts and usage are separate. Additional API providers are available in Settings.
+
+Manual downloads and checksums: https://github.com/gracelungu/playable-releases/releases
+
+[Website](https://playable-website-free-projects-0e54be6d.vercel.app)
