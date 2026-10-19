@@ -1,0 +1,72 @@
+name: Copy verified desktop installers
+on:
+  workflow_dispatch:
+    inputs:
+      artifacts:
+        description: Signed build-artifact URLs, names and GitHub SHA-256 digests
+        required: true
+        type: string
+permissions:
+  contents: write
+jobs:
+  transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Verify artifact digests and upload draft assets
+        env:
+          ARTIFACTS: ${{ inputs.artifacts }}
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        shell: python
+        run: |
+          import os, json, hashlib, pathlib, tempfile, urllib.request, zipfile, subprocess, concurrent.futures, shutil
+          from urllib.parse import urlsplit
+          repo = os.environ['REPOSITORY']
+          if repo != 'gracelungu/viewport-releases': raise RuntimeError('Unexpected publication target')
+          rows = json.loads(os.environ['ARTIFACTS'])
+          expected = {'mac-arm64':'zip','mac-x64':'zip','windows-x64':'zip','linux-x64':'deb'}
+          if {r['id'] for r in rows} != set(expected) or len(rows) != 4: raise RuntimeError('All four platforms required')
+          release = json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/releases'],text=True))
+          release = next(r for r in release if r['tag_name'] == 'v0.2.0')
+          if not release['draft']: raise RuntimeError('Only draft uploads allowed')
+          with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            def download(row):
+              u = urlsplit(row['url'])
+              if u.scheme != 'https' or not (u.hostname.endswith('.blob.core.windows.net') or u.hostname.endswith('.actions.githubusercontent.com')): raise RuntimeError('Unexpected artifact host')
+              target = root / (row['id']+'.artifact.zip')
+              h = hashlib.sha256()
+              with urllib.request.urlopen(row['url'],timeout=300) as response, target.open('wb') as output:
+                while chunk := response.read(1024*1024): h.update(chunk); output.write(chunk)
+              if 'sha256:'+h.hexdigest() != row['digest']: raise RuntimeError('Artifact digest mismatch')
+              print('Verified build artifact:',row['id'],flush=True)
+              return row,target
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+              downloaded = list(pool.map(download,rows))
+            sums=[]
+            for row, archive in downloaded:
+              filename = f"Viewport-{row['id']}.{expected[row['id']]}"
+              asset = root / filename
+              with zipfile.ZipFile(archive) as bundle:
+                if set(bundle.namelist()) != {filename,filename+'.sha256'}: raise RuntimeError('Unexpected artifact contents')
+                checksum = bundle.read(filename+'.sha256').decode().split()[0]
+                if len(checksum)!=64 or any(c not in '0123456789abcdef' for c in checksum): raise RuntimeError('Invalid build checksum')
+                with bundle.open(filename) as source, asset.open('wb') as output: shutil.copyfileobj(source,output)
+              archive.unlink()
+              with asset.open('rb') as stream: actual=hashlib.file_digest(stream,'sha256').hexdigest()
+              if actual!=checksum: raise RuntimeError('Installer checksum mismatch')
+              previous=next((a for a in release['assets'] if a['name']==filename),None)
+              if previous:
+                if previous.get('digest')!='sha256:'+actual or previous['size']!=asset.stat().st_size: raise RuntimeError('Existing draft asset differs')
+              else:
+                subprocess.run(['gh','release','upload','v0.2.0',str(asset),'--repo',repo],check=True)
+              uploaded=json.loads(subprocess.check_output(['gh','api',f"repos/{repo}/releases/{release['id']}"],text=True))
+              published=next(a for a in uploaded['assets'] if a['name']==filename)
+              if published.get('digest')!='sha256:'+actual or published['size']!=asset.stat().st_size: raise RuntimeError('GitHub upload digest mismatch')
+              sums.append(f'{actual}  {filename}\n')
+              print('Verified draft upload:',filename,flush=True)
+              asset.unlink()
+            checksums=root/'SHA256SUMS.txt'; checksums.write_text(''.join(sums))
+            subprocess.run(['gh','release','upload','v0.2.0',str(checksums),'--repo',repo],check=True)
+          print('All four verified installers copied. Release remains a draft.')
