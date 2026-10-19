@@ -14,6 +14,7 @@ Install Homebrew first from https://brew.sh if needed. The cask chooses your Mac
 ## Windows 11 (Intel / AMD 64-bit)
 
 ```powershell
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) { scoop install git }
 scoop bucket add playable https://github.com/gracelungu/playable-releases
 scoop install playable/playable
 ```
