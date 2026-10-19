@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "description": "Local game studio with AI agents, Blender and Godot",
+  "homepage": "https://openviewport.com",
+  "license": "Proprietary",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/gracelungu/viewport-releases/releases/download/v0.2.0/Viewport-windows-x64.zip",
+      "hash": "2c6c1f9214d6a99cd0929a06b19e9b1e62c899ac250944714ae082ba0e24595e",
+      "extract_dir": "Viewport-win32-x64"
+    }
+  },
+  "bin": [
+    [
+      "Viewport.exe",
+      "viewport"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "Viewport.exe",
+      "Viewport"
+    ]
+  ],
+  "notes": "Open Viewport and connect your Codex or Claude Code account. Blender and Godot are bundled. AI access and usage are separate."
+}
