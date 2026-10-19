@@ -12,6 +12,9 @@ cask "playable" do
   name "Playable"
   desc "Local game studio with AI agents, Blender and Godot"
   homepage "https://playable-website-free-projects-0e54be6d.vercel.app"
-  depends_on macos: ">= 13.1"
+  depends_on macos: :ventura
+  preflight do
+    odie "Playable requires macOS 13.1 or newer" if MacOS.version < MacOSVersion.new("13.1")
+  end
   app "Playable.app"
 end
