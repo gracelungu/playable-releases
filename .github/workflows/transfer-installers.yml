@@ -2,6 +2,10 @@ name: Copy verified desktop installers
 on:
   workflow_dispatch:
     inputs:
+      version:
+        description: Release version (for example 0.2.1)
+        required: true
+        type: string
       artifacts:
         description: Signed build-artifact URLs, names and GitHub SHA-256 digests
         required: true
@@ -15,20 +19,24 @@ jobs:
     steps:
       - name: Verify artifact digests and upload draft assets
         env:
+          VERSION: ${{ inputs.version }}
           ARTIFACTS: ${{ inputs.artifacts }}
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
         shell: python
         run: |
-          import os, json, hashlib, pathlib, tempfile, urllib.request, zipfile, subprocess, concurrent.futures, shutil
+          import re, os, json, hashlib, pathlib, tempfile, urllib.request, zipfile, subprocess, concurrent.futures, shutil
           from urllib.parse import urlsplit
+          version = os.environ['VERSION']
+          if not re.fullmatch(r'0\.\d+\.\d+', version): raise RuntimeError('Invalid early access version')
+          tag = 'v' + version
           repo = os.environ['REPOSITORY']
           if repo != 'gracelungu/viewport-releases': raise RuntimeError('Unexpected publication target')
           rows = json.loads(os.environ['ARTIFACTS'])
           expected = {'mac-arm64':'zip','mac-x64':'zip','windows-x64':'zip','linux-x64':'deb'}
           if {r['id'] for r in rows} != set(expected) or len(rows) != 4: raise RuntimeError('All four platforms required')
           release = json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/releases'],text=True))
-          release = next(r for r in release if r['tag_name'] == 'v0.2.0')
+          release = next(r for r in release if r['tag_name'] == tag)
           if not release['draft']: raise RuntimeError('Only draft uploads allowed')
           with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -60,7 +68,7 @@ jobs:
               if previous:
                 if previous.get('digest')!='sha256:'+actual or previous['size']!=asset.stat().st_size: raise RuntimeError('Existing draft asset differs')
               else:
-                subprocess.run(['gh','release','upload','v0.2.0',str(asset),'--repo',repo],check=True)
+                subprocess.run(['gh','release','upload',tag,str(asset),'--repo',repo],check=True)
               uploaded=json.loads(subprocess.check_output(['gh','api',f"repos/{repo}/releases/{release['id']}"],text=True))
               published=next(a for a in uploaded['assets'] if a['name']==filename)
               if published.get('digest')!='sha256:'+actual or published['size']!=asset.stat().st_size: raise RuntimeError('GitHub upload digest mismatch')
@@ -68,5 +76,5 @@ jobs:
               print('Verified draft upload:',filename,flush=True)
               asset.unlink()
             checksums=root/'SHA256SUMS.txt'; checksums.write_text(''.join(sums))
-            subprocess.run(['gh','release','upload','v0.2.0',str(checksums),'--repo',repo],check=True)
+            subprocess.run(['gh','release','upload',tag,str(checksums),'--repo',repo],check=True)
           print('All four verified installers copied. Release remains a draft.')
