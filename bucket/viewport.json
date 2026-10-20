@@ -1,12 +1,12 @@
 {
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Local game studio with AI agents, Blender and Godot",
   "homepage": "https://openviewport.com",
   "license": "Proprietary",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/gracelungu/viewport-releases/releases/download/v0.2.0/Viewport-windows-x64.zip",
-      "hash": "2c6c1f9214d6a99cd0929a06b19e9b1e62c899ac250944714ae082ba0e24595e",
+      "url": "https://github.com/gracelungu/viewport-releases/releases/download/v0.2.1/Viewport-windows-x64.zip",
+      "hash": "c18af7bd948d8f3a9c642160dff4d95698cc388aa395dfa0ed7ce89b4e9d64a8",
       "extract_dir": "Viewport-win32-x64"
     }
   },

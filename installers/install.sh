@@ -20,9 +20,9 @@ trap 'rm -rf "$work_dir"' EXIT HUP INT TERM
 # apt's _apt user needs traversal access; the package contains no private data.
 chmod 755 "$work_dir"
 package="$work_dir/Viewport-linux-x64.deb"
-echo 'Downloading Viewport 0.2.0 (about 1 GB, including Blender and Godot)…'
-curl --fail --location --proto '=https' --tlsv1.2 --retry 3 'https://github.com/gracelungu/viewport-releases/releases/download/v0.2.0/Viewport-linux-x64.deb' --output "$package"
-printf '%s  %s\n' '3d0fc544332f3b91a32605a7e6052b4160f368f152611a314535f896ab458396' "$package" | sha256sum --check --status || { echo 'Checksum mismatch. Nothing was installed.' >&2; exit 1; }
+echo 'Downloading Viewport 0.2.1 (about 1 GB, including Blender and Godot)…'
+curl --fail --location --proto '=https' --tlsv1.2 --retry 3 'https://github.com/gracelungu/viewport-releases/releases/download/v0.2.1/Viewport-linux-x64.deb' --output "$package"
+printf '%s  %s\n' '7bd5ec0ce4b96d7f059961fcf8e84b3f0ad0dda6c89b97dccd7eef0b69b83d64' "$package" | sha256sum --check --status || { echo 'Checksum mismatch. Nothing was installed.' >&2; exit 1; }
 chmod 644 "$package"
 echo 'Package verified. apt may ask for your administrator password and confirmation.'
 if [ "$(id -u)" -eq 0 ]; then apt-get install "$package"; else sudo apt-get install "$package"; fi
